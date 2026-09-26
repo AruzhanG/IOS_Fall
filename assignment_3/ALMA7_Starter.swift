@@ -273,7 +273,6 @@ let sort1 = validReadings.sorted(by: { (r1: Reading, r2: Reading) -> Bool in
 let sort2 = validReadings.sorted(by: { r1, r2 in
     return r1.value > r2.value
 })
-
 let sort3 = validReadings.sorted(by: { r1, r2 in r1.value > r2.value })
 
 let sort4 = validReadings.sorted(by: { $0.value > $1.value })
