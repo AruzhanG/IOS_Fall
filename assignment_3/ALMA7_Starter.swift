@@ -220,7 +220,6 @@ func parseLog(lines: [String]) -> (valid: [Reading], invalidCount: Int) {
     return (valid: validReadings, invalidCount: invalidCount)
 }
 
-// Fragment A
 let (validReadings, fragmentA) = parseLog(lines: rawLog)
 
 func select(readings: [Reading], where isIncluded: (Reading) -> Bool) -> [Reading] {
@@ -241,7 +240,6 @@ func values(of readings: [Reading]) -> [Int] {
     return result
 }
 
-// Фильтрация показаний датчика "O2" с замыканием {$0.sensor == "O2"}
 let o2Readings = select(readings: validReadings) { $0.sensor == "O2" }
 let o2Values = values(of: o2Readings)
 
@@ -265,30 +263,23 @@ func stats(values: Int...) -> (min: Int, max: Int, average: Double)? {
     stats(of: values)
 }
 
-// Fragment B
 let o2Stats = stats(of: o2Values)
 let fragmentB = Int(o2Stats?.average ?? 0)
 
-// 1. Полный синтаксис
 let sort1 = validReadings.sorted(by: { (r1: Reading, r2: Reading) -> Bool in
     return r1.value > r2.value
 })
 
-// 2. Вывод типов из контекста
 let sort2 = validReadings.sorted(by: { r1, r2 in
     return r1.value > r2.value
 })
 
-// 3. Неявный return (Implicit return)
 let sort3 = validReadings.sorted(by: { r1, r2 in r1.value > r2.value })
 
-// 4. Сокращенные имена аргументов ($0, $1)
 let sort4 = validReadings.sorted(by: { $0.value > $1.value })
 
-// 5. Последующее замыкание (Trailing closure)
 let sort5 = validReadings.sorted { $0.value > $1.value }
 
-// Проверка совпадения:
 let allMatch = (sort1.elementsEqual(sort2, by: { $0 == $1 })) &&
                (sort2.elementsEqual(sort3, by: { $0 == $1 })) &&
                (sort3.elementsEqual(sort4, by: { $0 == $1 })) &&
@@ -323,7 +314,6 @@ func runUntilStable(from start: Int, maxSteps: Int = 10) -> (finalTemp: Int, ste
     return (finalTemp: currentTemp, steps: steps, isStable: isStable)
 }
 
-// Fragment C: Поиск минимальной валидной температуры из rawLog
 let tempReadings = select(readings: validReadings) { $0.sensor == "TEMP" }
 let tempValues = values(of: tempReadings)
 let minTemp = stats(of: tempValues)?.min ?? 0
@@ -362,12 +352,10 @@ func transferOxygen(from source: inout Int, to target: inout Int, amount: Int) -
     return actualTransfer
 }
 
-// Передаем 30 единиц из Lab в Hab
 if let labTank = lab.oxygenTank, let habTank = hab.oxygenTank {
     transferOxygen(from: &labTank.level, to: &habTank.level, amount: 30)
 }
 
-// Fragment D: уровень кислорода в Hab
 let fragmentD = hab.oxygenTank?.level ?? 0
 
 func evacuationOrder(_ names: String..., roster: [String: CrewMember]) -> [String] {
@@ -403,15 +391,13 @@ func reportOxygen(for member: CrewMember) -> String {
 func firstCritical(in crew: [CrewMember]) -> String? {
     for member in crew {
         if let level = oxygenLevel(of: member), level < 20 {
-            return member.name // Возвращаем первого найденного
+            return member.name
         }
     }
     return nil
 }
 
-// Тест логической ошибки:
-// Создадим двух критических членов экипажа: [Critical1, Critical2]
-// Старый код вернул бы "Critical2", новый верно возвращает "Critical1".
+
 
 
 let launchCode = "\(fragmentA)-\(fragmentB)-\(fragmentC)-\(fragmentD)"
